@@ -31,6 +31,7 @@ std::string input_dialog(const char* title, const char prev[128]) {
   char buf[256] = {};
   strcpy(buf, prev);
   int i = strlen(buf);
+  mvwprintw(win, 2, 4, "%-36s", buf);
   int ch;
   while ((ch = wgetch(win)) != '\n') {
     if (ch == 27) return "";  // Escape — отмена
@@ -62,7 +63,6 @@ void popup_message(const char* title, const char* text) {
     mvwprintw(win, 1, 1, "%s", text);
     wrefresh(win);
   }
-  getch();
   delwin(win);
 }
 
@@ -204,27 +204,43 @@ int loop() {
     fs::remove_all(full);
   }
   if (ch == 'r') {
-    fs::rename(full, s + (s.back() == '/' ? "" : "/") + input_dialog("New file name:"));
+    fs::rename(full, s + (s.back() == '/' ? "" : "/") + input_dialog("New file name:", f.c_str()));
   }
   if (ch == 'm') {
     std::string s2(path2);
     std::string s1(path);
     if(page) {
-      fs::rename(s2 + (s2.back() == '/' ? "" : "/") + f, s1 + (s1.back() == '/' ? "" : "/") + input_dialog("Move as:"));
+      fs::rename(s2 + (s2.back() == '/' ? "" : "/") + f, s1 + (s1.back() == '/' ? "" : "/") + input_dialog("Move as:", f.c_str()));
     } else {
-      fs::rename(s1 + (s1.back() == '/' ? "" : "/") + f, s2 + (s2.back() == '/' ? "" : "/") + input_dialog("Move as:"));
+      fs::rename(s1 + (s1.back() == '/' ? "" : "/") + f, s2 + (s2.back() == '/' ? "" : "/") + input_dialog("Move as:", f.c_str()));
     }
   }
   if (ch == 'c') {
-    fs::copy(full, s + (s.back() == '/' ? "" : "/") + input_dialog("Copy as:"), fs::copy_options::recursive);
+    fs::copy(full, s + (s.back() == '/' ? "" : "/") + input_dialog("Copy as:", f.c_str()), fs::copy_options::recursive);
   }
   if (ch == 'h') {
-    popup_message("Dar commander Alpha v0.2", pth);
+    popup_message("Dar commander Alpha v0.3", pth);
   }
   if (ch == 'g') {
     strcpy(pth, input_dialog("Go to:", pth).c_str());
     memset(fils, 0, sizeof(files));
     *cur = 0;
+  }
+  if (ch == 'n') {
+    fs::create_directory(s + (s.back() == '/' ? "" : "/") + input_dialog("New folder:"));
+  }
+  if (ch == 's') {
+    std::string rq = input_dialog("Search for:");
+    int found = 0;
+    for(int i = 0; i < 64; i++) {
+      std::string file = std::string(fils[i]);
+      if(file.find(rq) != std::string::npos) {
+        popup_message("Found", file.c_str()); found++; //cnueonti;
+      }
+    }
+    char ff[40];
+    sprintf(ff, "Found %d results", found);
+    popup_message(ff, "Press enter to exit");
   }
   //mvprintw(LINES-1, 0, "ch=%d cur=%d", ch, current); refresh(); napms(2000);
   redraw(); return 1;

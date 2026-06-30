@@ -24,6 +24,8 @@ A terminal file manager for Windows, written in C++.
 | `d` | Delete file or directory |
 | `h` | Show version |
 | `g` | Go to folder |
+| `n` | Create new directory |
+| `s` | Search in file names |
 | Enter | Exit |
 
 ## Building
