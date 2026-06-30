@@ -45,6 +45,18 @@ std::string input_dialog(const char* title) {
   return std::string(buf);
 }
 
+void popup_message(const char* title) {
+  int h = 5, w = 40;
+  int y = LINES/2 - h/2, x = COLS/2 - w/2;
+  WINDOW* win = newwin(h, w, y, x);
+  box(win, 0, 0);
+  mvwprintw(win, 0, 2, " %s ", title);
+  wrefresh(win);
+
+  getch();
+  delwin(win);
+}
+
 std::string utf8_to_cp1251(const std::string& s) {
   int wlen = MultiByteToWideChar(CP_UTF8, 0, s.c_str(), -1, nullptr, 0);
   std::wstring wide(wlen, 0);
@@ -206,6 +218,9 @@ int loop() {
   }
   if (ch == 'c') {
     fs::copy(full, s + (s.back() == '/' ? "" : "/") + input_dialog("Copy as:"), fs::copy_options::recursive);
+  }
+  if (ch == 'h') {
+    popup_message("Dar commander Alpha v0.2");
   }
   //mvprintw(LINES-1, 0, "ch=%d cur=%d", ch, current); refresh(); napms(2000);
   redraw(); return 1;
