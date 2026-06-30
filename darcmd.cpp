@@ -18,7 +18,8 @@ char files[64][64];
 char filer[8] = "hjfhjr3";
 char files2[64][64];
 
-std::string input_dialog(const char* title) {
+std::string input_dialog(const char* title, const char prev[128] = "");
+std::string input_dialog(const char* title, const char prev[128]) {
   int h = 5, w = 40;
   int y = LINES/2 - h/2, x = COLS/2 - w/2;
   WINDOW* win = newwin(h, w, y, x);
@@ -28,7 +29,8 @@ std::string input_dialog(const char* title) {
   wrefresh(win);
 
   char buf[256] = {};
-  int i = 0;
+  strcpy(buf, "preset text");
+  int i = strlen(buf);
   int ch;
   while ((ch = wgetch(win)) != '\n') {
     if (ch == 27) return "";  // Escape — отмена
@@ -221,6 +223,9 @@ int loop() {
   }
   if (ch == 'h') {
     popup_message("Dar commander Alpha v0.2");
+  }
+  if (ch == 'g') {
+    strcpy(pth, input_dialog("Go to:", pth).c_str());
   }
   //mvprintw(LINES-1, 0, "ch=%d cur=%d", ch, current); refresh(); napms(2000);
   redraw(); return 1;

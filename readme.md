@@ -23,6 +23,7 @@ A terminal file manager for Windows, written in C++.
 | `r` | Rename file |
 | `d` | Delete file or directory |
 | `h` | Show version |
+| `g` | Go to folder |
 | Enter | Exit |
 
 ## Building
