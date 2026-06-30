@@ -29,7 +29,7 @@ std::string input_dialog(const char* title, const char prev[128]) {
   wrefresh(win);
 
   char buf[256] = {};
-  strcpy(buf, "preset text");
+  strcpy(buf, prev);
   int i = strlen(buf);
   int ch;
   while ((ch = wgetch(win)) != '\n') {
@@ -201,7 +201,7 @@ int loop() {
     }
   }
   if (ch == KEY_UP   && *cur > 0 ) (*cur)--;
-  if (ch == KEY_DOWN && *cur < 31) (*cur)++;
+  if (ch == KEY_DOWN && *cur < 63) (*cur)++;
   if (ch == '\t') page = !page;
   if (ch == 'd') {
     fs::remove_all(full);
