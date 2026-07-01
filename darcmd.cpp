@@ -66,6 +66,12 @@ void popup_message(const char* title, const char* text) {
   delwin(win);
 }
 
+bool is_junction(const std::string& path) {
+  DWORD attr = GetFileAttributesA(path.c_str());
+  return (attr != INVALID_FILE_ATTRIBUTES) && 
+         (attr & FILE_ATTRIBUTE_REPARSE_POINT);
+}
+
 std::string utf8_to_cp1251(const std::string& s) {
   int wlen = MultiByteToWideChar(CP_UTF8, 0, s.c_str(), -1, nullptr, 0);
   std::wstring wide(wlen, 0);
@@ -109,8 +115,10 @@ void draw_half(int *cur, char (*fils)[64], char *pth, bool half) {
   entr[41] = '|';
   entr[42] = '\0';
   int j = 2, cfile = 0;
+  bool er = 0;
   try {
     for (auto& entry : fs::directory_iterator(pth, fs::directory_options::skip_permission_denied)) {
+      if (cfile >= 64) { er = 1; break; }
       memset(entr, ' ', 42);
       entr[0 ] = '|';
       entr[42] = '\0';
@@ -118,7 +126,7 @@ void draw_half(int *cur, char (*fils)[64], char *pth, bool half) {
       std::string filename = utf8_to_cp1251(entry.path().filename().string());
       snprintf(name, sizeof(name), "%s", filename.c_str());
       for(int i = strlen(name); i < 31; i++) name[i] = ' ';
-      std::string size = entry.is_directory() ? "Folder" : std::to_string(entry.file_size());
+      std::string size = is_junction(std::string(entry.path().string())) ? "Link" : (entry.is_directory() ? "Folder" : std::to_string(entry.file_size()));
       memcpy(entr + 1, name, 31);
       memcpy(fils[cfile], name, 63);
       fils[cfile][63] = '\0';
@@ -131,9 +139,11 @@ void draw_half(int *cur, char (*fils)[64], char *pth, bool half) {
       if(sel) attroff(A_REVERSE);
       j++; cfile++;
     }
+    if(er) {
+      popup_message("Error", "File overflow"); cd_up();
+    }
     refresh();
   } catch (const fs::filesystem_error& e) {
-    log("CAUGHT half=%d", half);
     popup_message("Error", "Access denied");
     cd_up();
   }

@@ -8,6 +8,8 @@ A terminal file manager for Windows, written in C++.
 - Russian (CP1251) filename support
 - File operations: copy, move, rename, delete
 - Open files with their default applications
+- Junction point / symlink detection
+- Search in file names
 - Keyboard-driven interface
 
 ## Keyboard Shortcuts
@@ -22,10 +24,10 @@ A terminal file manager for Windows, written in C++.
 | `m` | Move file to other panel |
 | `r` | Rename file |
 | `d` | Delete file or directory |
-| `h` | Show version |
-| `g` | Go to folder |
 | `n` | Create new directory |
 | `s` | Search in file names |
+| `g` | Go to folder |
+| `h` | Show version info |
 | Enter | Exit |
 
 ## Building
